@@ -1,0 +1,7 @@
+# 忽略所有文件
+*
+
+# 不忽略目录
+!Assets/
+!ProjectSettings/
+!.gitignore

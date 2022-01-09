@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4532991747819580487}
   - component: {fileID: 3424963390295757544}
   - component: {fileID: 6521716111797401411}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,8 @@ GameObject:
   - component: {fileID: 1894841935091544137}
   - component: {fileID: 7405348809359094836}
   - component: {fileID: 6879139284487537563}
-  m_Layer: 5
+  - component: {fileID: 874771494119742689}
+  m_Layer: 6
   m_Name: LT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,7 +113,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 375.55, y: 1376}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 282, y: 282}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5039430035112689861
@@ -192,3 +193,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 216, y: 216}
   m_EdgeRadius: 0
+--- !u!114 &874771494119742689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695447122770632300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b792a33f6d2384147bd51e3e46612b18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 6521716111797401411}

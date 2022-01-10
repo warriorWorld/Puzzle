@@ -151,8 +151,13 @@ public class PuzzleManager : MonoBehaviour
 
         startX = x * fixedMinSize;
         width = (x == columnCount - 1) ? fixedMinSize : fixedMaxSize;//因为所有R的宽度都是小值
-        startY = textureHeight - fixedMaxSize* (y+1)+(fixedMaxSize-fixedMinSize)*y;//y的开始点是最下边，所以是顶点坐标-大值再去掉拼图的凸起即大值-小值
+        startY = textureHeight - fixedMaxSize * (y + 1) + (fixedMaxSize - fixedMinSize) * y;//y的开始点是最下边，所以是顶点坐标-大值再去掉拼图的凸起即大值-小值
+        if (y == rowCount - 1) {
+            //最底下的那个拼图没有Y方向没有凸起
+            startY += (fixedMaxSize - fixedMinSize);
+        }
         height = (y == rowCount - 1) ? fixedMinSize : fixedMaxSize;
+        //超出图片界限处理
         if (startY < 0)
         {
             height = height + startY;

@@ -19,6 +19,7 @@ public class PuzzleManager : MonoBehaviour
     public GameObject dragTargetPrefab;
     private GameObject[,] dragTargets, dragItems;
     public GameObject ltPrefab, mtPrefab, rtPrefab, lmPrefab, mmPrefab, rmPrefab, lbPrefab, mbPrefab, rbPrefab;
+    public RectTransform solvedGroup, unsolvedGroup;
 
     private void Awake()
     {
@@ -76,7 +77,7 @@ public class PuzzleManager : MonoBehaviour
         }
 
         //计算需要的item数量
-        rowCount = (tableHeight % PUZZLE_MIN_SIZE == 0) ? (int)(tableHeight / PUZZLE_MIN_SIZE) : (int)(tableHeight / PUZZLE_MIN_SIZE) + 1;
+        rowCount = (tableHeight % PUZZLE_MIN_SIZE == 0||tableHeight%PUZZLE_MIN_SIZE<=PUZZLE_MIN_SIZE/2) ? (int)(tableHeight / PUZZLE_MIN_SIZE) : (int)(tableHeight / PUZZLE_MIN_SIZE) + 1;
         columnCount = (tableWidth % PUZZLE_MIN_SIZE == 0) ? (int)(tableWidth / PUZZLE_MIN_SIZE) : (int)(tableWidth / PUZZLE_MIN_SIZE) + 1;
         Debug.Log("rowCount:" + rowCount + " ,columnCount:" + columnCount);
 
@@ -103,10 +104,12 @@ public class PuzzleManager : MonoBehaviour
         dragTargets = new GameObject[columnCount, rowCount];
         for (int x = 0; x < columnCount; x++)
         {
+            float lastY=0;
             for (int y = 0; y < rowCount; y++)
             {
                 GameObject dragTarget = Instantiate(dragTargetPrefab, uISpriteLoader.transform);
-                dragTarget.transform.localPosition = new Vector3(left + x * columnEven + columnEven / 2f, top - y * rowEven - rowEven / 2f);
+                lastY = y == 0 ? top - PUZZLE_MIN_SIZE / 2f : lastY - PUZZLE_MIN_SIZE;
+                dragTarget.transform.localPosition = new Vector3(left + x * columnEven + columnEven / 2f,lastY);
                 dragTargets[x, y] = dragTarget;
             }
         }
@@ -132,16 +135,24 @@ public class PuzzleManager : MonoBehaviour
         {
             for (int y = 0; y < rowCount; y++)
             {
-                GameObject dragItem = Instantiate(getDragItemPrefabByCoordinates(x, y), dragItemsTable.transform);
+                GameObject dragItem = Instantiate(getDragItemPrefabByCoordinates(x, y), getBornPoint());
                 Image image = dragItem.GetComponent<Dragable>().image;
 
                 //0,0点为左下角，无论是被裁的还是裁的结果都是
                 image.sprite = Sprite.Create(texture2D, getDragItemRect(image.GetComponent<RectTransform>(),texture2D.height,x,y,fixedMaxSize,fixedMinSize,sizeRatio), anchor);
                 image.preserveAspect = true;
 
+                dragItem.GetComponent<Dragable>().setFutureParent(solvedGroup,unsolvedGroup);
                 dragItems[x, y] = dragItem;
             }
         }
+    }
+
+    private Transform getBornPoint()
+    {
+        int index = new System.Random().Next(dragItemsTable.transform.childCount);
+
+        return dragItemsTable.transform.GetChild(index);
     }
 
     //0,0点为左下角，无论是被裁的还是裁的结果都是

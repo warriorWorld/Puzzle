@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: solved
+    uniqueID: 2319683553
+    locked: 0
+  - name: unsolved
+    uniqueID: 3654575421
+    locked: 0

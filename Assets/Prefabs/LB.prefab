@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1688291840055102583, guid: 9bea10b625fb2114b8893bf877f66503, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 1494916709542604328}
+  positionOffset: {x: 33, y: 0}
 --- !u!61 &512873898162422456
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -204,5 +205,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 216, y: 216}
+  m_Size: {x: 100, y: 100}
   m_EdgeRadius: 0

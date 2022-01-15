@@ -1,29 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
 using System;
+using UniRx;
 
 public class CompleteAnim : MonoBehaviour
 {
     public string completeText = "PuzzleSolved£¡";
-    public Pusher pusherPrefab;
-
-     void Start()
-    {
-        startAnim();
-    }
+    public GameObject pusherPrefab;
 
     public void startAnim()
     {
-        //string[] split = completeText.Split();
-        //split.ToObservable().
-        //Observable.Timer(TimeSpan.FromSeconds(0),TimeSpan.FromSeconds(1)).Subscribe(l=> {
-        //    Instantiate(pusherPrefab, transform);
-        //}).AddTo(this);
-    }
-     void Update()
-    {
-        
+        char[] split = completeText.ToCharArray();
+        Debug.Log("split£º" + split.Length);
+
+        Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.3)).Zip<long, char, string>(split.ToObservable(), (l, t) => {
+            return t.ToString();
+        }).Subscribe(text =>
+        {
+            GameObject gameObject = Instantiate(pusherPrefab, transform);
+            gameObject.GetComponent<Pusher>().setText(text);
+        }).AddTo(this);
     }
 }

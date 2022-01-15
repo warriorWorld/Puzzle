@@ -25,6 +25,7 @@ public class PuzzleManager : MonoBehaviour
     public RectTransform bottomLine;
     private int solvedCount=0;
     public Image puzzleImage;
+    public CompleteAnim completeAnim;
 
     private void Awake()
     {
@@ -250,6 +251,7 @@ public class PuzzleManager : MonoBehaviour
                 puzzleImage.enabled = true;
                 topLine.gameObject.SetActive(false);
                 bottomLine.gameObject.SetActive(false);
+                completeAnim.startAnim();
             }
         }
     }

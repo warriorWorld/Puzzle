@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,30 +32,17 @@ public class PuzzleManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    private void loadTexture()
-    {
-#if UNITY_EDITOR
-        loadTextureFromPC();
-        return;
-#endif
-        loadTextureFromAndroid();
-    }
-
     private void loadTextureFromPC()
     {
-        OpenFileDialog dialog = new OpenFileDialog();
-        dialog.Filter = "JPGͼƬ|*.jpg|PNGͼƬ|*.png|JPEGͼƬ|*.jpeg";
-        if (dialog.ShowDialog() == DialogResult.OK)
-        {
-            string path = dialog.FileName;
-            preparePuzzle(path);
-        }
+        //OpenFileDialog dialog = new OpenFileDialog();
+        //dialog.Filter = "JPGͼƬ|*.jpg|PNGͼƬ|*.png|JPEGͼƬ|*.jpeg";
+        //if (dialog.ShowDialog() == DialogResult.OK)
+        //{
+        //    string path = dialog.FileName;
+        //    preparePuzzle(path);
+        //}
     }
 
-    private void loadTextureFromAndroid()
-    {
-
-    }
 
     private void preparePuzzle(string path) {
         Debug.Log("selected path:" + path);
@@ -78,7 +65,7 @@ public class PuzzleManager : MonoBehaviour
         Debug.Log("width:" + tableWidth + " ,height:" + tableHeight);
         if (tableWidth < PUZZLE_MIN_COUNT * PUZZLE_MIN_SIZE || tableHeight < PUZZLE_MIN_SIZE * PUZZLE_MIN_COUNT)
         {
-            //不满足最小尺寸要求
+            //TODO 不满足最小尺寸要求
             nextImage();
             return;
         }
@@ -283,13 +270,26 @@ public class PuzzleManager : MonoBehaviour
         solvedCount--;
     }
 
+    //PC端调用
     public void nextImage()
+    {
+        resetValue();
+        loadTextureFromPC();
+    }
+
+    //ANDROID端调用
+    public void nextAndroidImage(string path)
+    {
+        resetValue();
+        preparePuzzle(path);
+    }
+
+    private void resetValue()
     {
         uISpriteLoader.gameObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(TABLE_WIDTH, TABLE_HEIGHT);
         solvedCount = 0;
         puzzleImage.enabled = false;
         topLine.gameObject.SetActive(true);
         bottomLine.gameObject.SetActive(true);
-        loadTexture();
     }
 }

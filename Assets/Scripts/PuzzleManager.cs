@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -20,17 +21,15 @@ public class PuzzleManager : MonoBehaviour
     private GameObject[,] dragTargets, dragItems;
     public GameObject ltPrefab, mtPrefab, rtPrefab, lmPrefab, mmPrefab, rmPrefab, lbPrefab, mbPrefab, rbPrefab;
     public RectTransform solvedGroup, unsolvedGroup;
+    public RectTransform topLine;
+    public RectTransform bottomLine;
+    private int solvedCount=0;
+    public Image puzzleImage;
 
     private void Awake()
     {
         instance = this;
         DontDestroyOnLoad(this.gameObject);
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        loadTexture();
     }
 
     private void loadTexture()
@@ -49,17 +48,25 @@ public class PuzzleManager : MonoBehaviour
         if (dialog.ShowDialog() == DialogResult.OK)
         {
             string path = dialog.FileName;
-            Debug.Log("selected path:" + path);
-            uISpriteLoader.setURL(path, () =>
-            {
-                measurePuzzlePiece();
-            });
+            preparePuzzle(path);
         }
     }
 
     private void loadTextureFromAndroid()
     {
 
+    }
+
+    private void preparePuzzle(string path) {
+        Debug.Log("selected path:" + path);
+        uISpriteLoader.setURL(path, () =>
+        {
+            measurePuzzlePiece();
+            adjustBottomLine();
+            //生成
+            generateDragTarget();
+            generateDragItem();
+        });
     }
 
     private void measurePuzzlePiece()
@@ -80,10 +87,11 @@ public class PuzzleManager : MonoBehaviour
         rowCount = (tableHeight % PUZZLE_MIN_SIZE == 0||tableHeight%PUZZLE_MIN_SIZE<=PUZZLE_MIN_SIZE/2) ? (int)(tableHeight / PUZZLE_MIN_SIZE) : (int)(tableHeight / PUZZLE_MIN_SIZE) + 1;
         columnCount = (tableWidth % PUZZLE_MIN_SIZE == 0) ? (int)(tableWidth / PUZZLE_MIN_SIZE) : (int)(tableWidth / PUZZLE_MIN_SIZE) + 1;
         Debug.Log("rowCount:" + rowCount + " ,columnCount:" + columnCount);
+    }
 
-        //生成
-        generateDragTarget();
-        generateDragItem();
+    private void adjustBottomLine() {
+        Debug.Log("bottom:"+bottomLine.position.ToString()+" ,"+bottomLine.anchoredPosition.ToString()+" ,"+bottomLine.localPosition.ToString());
+        bottomLine.anchoredPosition = new Vector2(0, tableHeight - rowCount * PUZZLE_MIN_SIZE) ;
     }
 
     private void generateDragTarget()
@@ -102,6 +110,7 @@ public class PuzzleManager : MonoBehaviour
             }
         }
         dragTargets = new GameObject[columnCount, rowCount];
+        int id=0;
         for (int x = 0; x < columnCount; x++)
         {
             float lastY=0;
@@ -111,6 +120,10 @@ public class PuzzleManager : MonoBehaviour
                 lastY = y == 0 ? top - PUZZLE_MIN_SIZE / 2f : lastY - PUZZLE_MIN_SIZE;
                 dragTarget.transform.localPosition = new Vector3(left + x * columnEven + columnEven / 2f,lastY);
                 dragTargets[x, y] = dragTarget;
+                DragTarget dragTargetScript = dragTarget.GetComponent<DragTarget>();
+                dragTargetScript.setId(id);
+                dragTargetScript.setPuzzleManager(this);
+                id++;
             }
         }
     }
@@ -131,27 +144,31 @@ public class PuzzleManager : MonoBehaviour
         float fixedMaxSize = PUZZLE_MAX_SIZE / sizeRatio;
         float fixedMinSize = PUZZLE_MIN_SIZE / sizeRatio;
         Vector2 anchor = new Vector2(0.5f, 0.5f);
+        int id = 0;
         for (int x = 0; x < columnCount; x++)
         {
             for (int y = 0; y < rowCount; y++)
             {
                 GameObject dragItem = Instantiate(getDragItemPrefabByCoordinates(x, y), getBornPoint());
-                Image image = dragItem.GetComponent<Dragable>().image;
+                Dragable dragable = dragItem.GetComponent<Dragable>();
+                Image image = dragable.image;
 
                 //0,0点为左下角，无论是被裁的还是裁的结果都是
                 image.sprite = Sprite.Create(texture2D, getDragItemRect(image.GetComponent<RectTransform>(),texture2D.height,x,y,fixedMaxSize,fixedMinSize,sizeRatio), anchor);
                 image.preserveAspect = true;
 
-                dragItem.GetComponent<Dragable>().setFutureParent(solvedGroup,unsolvedGroup);
+                dragable.setFutureParent(solvedGroup,unsolvedGroup);
                 dragItems[x, y] = dragItem;
+                dragable.setId(id);
+                id++;
             }
         }
     }
 
     private Transform getBornPoint()
     {
-        int index = new System.Random().Next(dragItemsTable.transform.childCount);
-
+        int index = new System.Random(DateTime.Now.Millisecond).Next(dragItemsTable.transform.childCount);
+        Debug.Log("getBornPoint childCount:"+ dragItemsTable.transform.childCount+" ,index:"+index);
         return dragItemsTable.transform.GetChild(index);
     }
 
@@ -228,9 +245,51 @@ public class PuzzleManager : MonoBehaviour
         }
     }
 
+    public void solvedOne()
+    {
+        solvedCount++;
+        if (solvedCount >= rowCount * columnCount) {
+            Debug.Log("Puzzle Over");
+            //全部拼完，检查是否正确
+            if (checkPuzzleCompleted())
+            {
+                //GAME OVER 
+                Debug.Log("Game Over");
+                foreach (GameObject go in dragItems)
+                {
+                    Destroy(go);
+                }
+                dragItems = null;
+                puzzleImage.enabled = true;
+                topLine.gameObject.SetActive(false);
+                bottomLine.gameObject.SetActive(false);
+            }
+        }
+    }
+    private bool checkPuzzleCompleted() {
+        foreach(GameObject gameObject in dragItems)
+        {
+            Dragable dragable = gameObject.GetComponent<Dragable>();
+            if (!dragable.isCorrect())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void unsolvedOne()
+    {
+        solvedCount--;
+    }
+
     public void nextImage()
     {
         uISpriteLoader.gameObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(TABLE_WIDTH, TABLE_HEIGHT);
+        solvedCount = 0;
+        puzzleImage.enabled = false;
+        topLine.gameObject.SetActive(true);
+        bottomLine.gameObject.SetActive(true);
         loadTexture();
     }
 }

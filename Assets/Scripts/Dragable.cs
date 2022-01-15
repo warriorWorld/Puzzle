@@ -7,11 +7,13 @@ using UnityEngine.UI;
 
 public class Dragable : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    private int id;
     public Image image;
     private bool collidable = false;
     private DragTarget attachedDragTarget;
     public Vector2 positionOffset;
     private RectTransform solvedGroup, unsolvedGroup;
+    public void setId(int id) { this.id = id; }
 
     public void setFutureParent(RectTransform solvedParent,RectTransform unsolvedParent)
     {
@@ -49,14 +51,9 @@ public class Dragable : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public bool isCollidable() { return collidable; }
 
     // Start is called before the first frame update
-    void Start()
+    
+    public bool isCorrect()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return id == attachedDragTarget?.getId();
     }
 }

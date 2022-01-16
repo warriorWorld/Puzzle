@@ -8,6 +8,12 @@ public class Pusher : MonoBehaviour
     public float force = 50f;
     private float startTime = 0;
     private float delayTime = 6f;
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     public void setText(string text) {
         GetComponent<Text>().text = text;
@@ -18,6 +24,14 @@ public class Pusher : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().AddForce(new Vector2(force, 0));
         startTime = Time.time;
+        if (ShareKeys.isSoundOpen())
+        {
+            audioSource.Play();
+        }
+        else
+        {
+            NativeCaller.vibrate();
+        }
     }
 
     void Update()

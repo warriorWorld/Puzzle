@@ -42,7 +42,14 @@ public class DragTarget : MonoBehaviour
         if (currentCollisionDragItem.isCollidable())
         {
             Debug.Log("OnTriggerStay2D:" + collision.name);
-            audioSource.Play();
+            if (ShareKeys.isSoundOpen())
+            {
+                audioSource.Play();
+            }
+            else
+            {
+                NativeCaller.vibrate();
+            }
             currentCollision.transform.position = transform.position+currentCollisionDragItem.getPositionOffset();
             currentCollisionDragItem.setAttachedDragTarget(this);
             boxCollider2D.enabled = false;

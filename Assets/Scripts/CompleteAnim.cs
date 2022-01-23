@@ -6,15 +6,13 @@ using UniRx;
 
 public class CompleteAnim : MonoBehaviour
 {
-    public string completeText = "PuzzleSolved£¡";
+    public string[] completeText;
     public GameObject pusherPrefab;
 
     public void startAnim()
     {
-        char[] split = completeText.ToCharArray();
-        Debug.Log("split£º" + split.Length);
 
-        Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.3)).Zip<long, char, string>(split.ToObservable(), (l, t) => {
+        Observable.Timer(TimeSpan.Zero, TimeSpan.FromSeconds(0.3)).Zip<long, string, string>(completeText.ToObservable(), (l, t) => {
             return t.ToString();
         }).Subscribe(text =>
         {

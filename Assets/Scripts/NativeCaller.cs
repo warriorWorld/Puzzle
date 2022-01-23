@@ -3,13 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NativeCaller 
+public class NativeCaller
 {
     public static void vibrate()
     {
         callNative("vibrate");
     }
-
+    public static void loadNextImage()
+    {
+        callNative("loadNextImage");
+    }
+    public static void camera()
+    {
+        callNative("camera");
+    }
+    public static void showLoading()
+    {
+        callNative("showLoading");
+    }
+    public static void dismissLoading()
+    {
+        callNative("dismissLoading");
+    }
     public static void callNative(string method)
     {
         callNative(method, "");
@@ -23,7 +38,7 @@ public class NativeCaller
             AndroidJavaClass jc = new AndroidJavaClass("com.harbinger.puzzlelibrary.OverrideUnityActivity");
             AndroidJavaObject overrideActivity = jc.GetStatic<AndroidJavaObject>("instance");
 
-            Debug.Log("method:"+method+" ,json:" + json);
+            Debug.Log("method:" + method + " ,json:" + json);
             if (json == null || json == "")
             {
                 overrideActivity.Call(method);

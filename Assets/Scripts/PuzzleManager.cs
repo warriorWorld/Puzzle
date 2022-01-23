@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,15 +35,14 @@ public class PuzzleManager : MonoBehaviour
 
     private void loadTextureFromPC()
     {
-        OpenFileDialog dialog = new OpenFileDialog();
-        dialog.Filter = "JPGͼƬ|*.jpg|PNGͼƬ|*.png|JPEGͼƬ|*.jpeg";
-        if (dialog.ShowDialog() == DialogResult.OK)
-        {
-            string path = dialog.FileName;
-            preparePuzzle(path);
-        }
+        //OpenFileDialog dialog = new OpenFileDialog();
+        //dialog.Filter = "JPGͼƬ|*.jpg|PNGͼƬ|*.png|JPEGͼƬ|*.jpeg";
+        //if (dialog.ShowDialog() == DialogResult.OK)
+        //{
+        //    string path = dialog.FileName;
+        //    preparePuzzle(path);
+        //}
     }
-
 
     private void preparePuzzle(string path) {
         Debug.Log("selected path:" + path);
@@ -69,7 +68,7 @@ public class PuzzleManager : MonoBehaviour
         if (tableWidth < PUZZLE_MIN_COUNT * PUZZLE_MIN_SIZE || tableHeight < PUZZLE_MIN_SIZE * PUZZLE_MIN_COUNT)
         {
             //TODO 不满足最小尺寸要求
-            nextImage();
+            resetValue();
             return;
         }
 
@@ -155,7 +154,13 @@ public class PuzzleManager : MonoBehaviour
                 Image image = dragable.image;
 
                 //0,0点为左下角，无论是被裁的还是裁的结果都是
+                try { 
                 image.sprite = Sprite.Create(texture2D, getDragItemRect(image.GetComponent<RectTransform>(),texture2D.height,x,y,fixedMaxSize,fixedMinSize,sizeRatio), anchor);
+                }catch(Exception e)
+                {
+                    Debug.Log("create sprite failed:"+e.ToString()+" ,"+e.Message);
+                    resetValue();
+                }
                 image.preserveAspect = true;
 
                 dragable.setFutureParent(solvedGroup,unsolvedGroup);
@@ -315,5 +320,6 @@ public class PuzzleManager : MonoBehaviour
         puzzleImage.enabled = false;
         topLine.gameObject.SetActive(true);
         bottomLine.gameObject.SetActive(true);
+        NativeCaller.dismissLoading();
     }
 }
